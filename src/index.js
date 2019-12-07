@@ -32,6 +32,9 @@ class PhoneInput extends React.Component {
     buttonClass: PropTypes.string,
     dropdownClass: PropTypes.string,
     searchClass: PropTypes.string,
+    // Use this object insead of the standard
+    // classNames to generate the classNames
+    classNamesGen: PropTypes.object,
 
     autoFormat: PropTypes.bool,
 
@@ -99,6 +102,8 @@ class PhoneInput extends React.Component {
     dropdownClass: '',
     searchClass: '',
 
+    classNamesGen: null,
+
     autoFormat: true,
     enableAreaCodes: false,
     isValid: (inputNumber, onlyCountries) => true,
@@ -142,6 +147,7 @@ class PhoneInput extends React.Component {
       props.prefix,
     );
 
+    const classNamesGen = props.classNamesGen || classNames;
     const inputNumber = props.value.replace(/[^0-9\.]+/g, '') || '';
 
     let countryGuess;
@@ -695,14 +701,14 @@ class PhoneInput extends React.Component {
     const searchedCountries = this.getSearchFilteredCountries()
 
     let countryDropdownList = searchedCountries.map((country, index) => {
-      const itemClasses = classNames({
+      const itemClasses = classNamesGen({
         country: true,
         preferred: country.iso2 === 'us' || country.iso2 === 'gb',
         active: country.iso2 === 'us',
         highlight: highlightCountryIndex === index
       });
 
-      const inputFlagClasses = `flag ${country.iso2}`;
+      const inputFlagClasses = classNamesGen(["flag", country.iso2]);
 
       return (
         <li
@@ -727,7 +733,7 @@ class PhoneInput extends React.Component {
     (preferredCountries.length > 0) && (!enableSearch || enableSearch && !searchValue.trim()) &&
     countryDropdownList.splice(preferredCountries.length, 0, dashedLi);
 
-    const dropDownClasses = classNames({
+    const dropDownClasses = classNamesGen({
       [this.props.dropdownClass]: true,
       'country-list': true,
       'hide': !showDropdown
@@ -788,23 +794,26 @@ class PhoneInput extends React.Component {
     const { onlyCountries, selectedCountry, showDropdown, formattedNumber } = this.state;
     const { disableDropdown, renderStringAsFlag } = this.props;
 
-    const arrowClasses = classNames({'arrow': true, 'up': showDropdown});
-    const inputClasses = classNames({
+    const arrowClasses = classNamesGen({'arrow': true, 'up': showDropdown});
+    const inputClasses = classNamesGen({
       [this.props.inputClass]: true,
       'form-control': true,
       'invalid-number': !this.props.isValid(formattedNumber.replace(/\D/g, ''), onlyCountries),
       'open': showDropdown,
     });
-    const selectedFlagClasses = classNames({
+    const selectedFlagClasses = classNamesGen({
       'selected-flag': true,
       'open': showDropdown,
     });
-    const flagViewClasses = classNames({
+    const flagViewClasses = classNamesGen({
       [this.props.buttonClass]: true,
       'flag-dropdown': true,
       'open': showDropdown,
     });
-    const inputFlagClasses = `flag ${selectedCountry && selectedCountry.iso2}`;
+    const inputFlagClasses =
+          classNamesGen(["flag",
+                         selectedCountry ? selectedCountry.iso2 : ""]);
+
 
     return (
       <div
