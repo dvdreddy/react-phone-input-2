@@ -696,20 +696,20 @@ class PhoneInput extends React.Component {
   }
 
   getCountryDropdownList = () => {
-    const { preferredCountries, highlightCountryIndex, showDropdown, searchValue } = this.state;
+    const { preferredCountries, highlightCountryIndex, showDropdown, searchValue, classNamesGen } = this.state;
     const { enableSearch, disableSearchIcon, searchClass, searchStyle, searchPlaceholder, autocompleteSearch } = this.props;
 
     const searchedCountries = this.getSearchFilteredCountries()
 
     let countryDropdownList = searchedCountries.map((country, index) => {
-      const itemClasses = this.state.classNamesGen({
+      const itemClasses = classNamesGen({
         country: true,
         preferred: country.iso2 === 'us' || country.iso2 === 'gb',
         active: country.iso2 === 'us',
         highlight: highlightCountryIndex === index
       });
 
-      const inputFlagClasses = this.state.classNamesGen(["flag", country.iso2]);
+      const inputFlagClasses = classNamesGen(["flag", country.iso2]);
 
       return (
         <li
@@ -723,13 +723,19 @@ class PhoneInput extends React.Component {
           onClick={() => this.handleFlagItemClick(country)}
         >
           <div className={inputFlagClasses}/>
-          <span className='country-name'>{this.getDropdownCountryName(country)}</span>
-          <span className='dial-code'>{country.format ? this.formatNumber(country.dialCode, country.format) : (this.props.prefix+country.dialCode)}</span>
-        </li>
-      );
+          <span className={classNamesGen('country-name')}>
+            {this.getDropdownCountryName(country)}
+          </span>
+          <span className={classNamesGen('dial-code')}>
+            {country.format ?
+              this.formatNumber(country.dialCode, country.format) :
+              (this.props.prefix+country.dialCode)}
+          </span>
+          </li>);
+
     });
 
-    const dashedLi = (<li key={'dashes'} className='divider'/>);
+    const dashedLi = (<li key={'dashes'} className={this.state.classNamesGen('divider')}/>);
     // let's insert a dashed line in between preffered countries and the rest
     (preferredCountries.length > 0) && (!enableSearch || enableSearch && !searchValue.trim()) &&
     countryDropdownList.splice(preferredCountries.length, 0, dashedLi);
@@ -748,14 +754,14 @@ class PhoneInput extends React.Component {
       >
         {enableSearch && (
           <li
-            className={classNames({
+            className={this.state.classNamesGen({
               search: true,
               [searchClass]: searchClass,
             })}
           >
             {!disableSearchIcon &&
               <span
-                className={classNames({
+                className={this.state.classNamesGen({
                   'search-emoji': true,
                   [`${searchClass}-emoji`]: searchClass,
                 })}
@@ -765,7 +771,7 @@ class PhoneInput extends React.Component {
                 &#128270;
               </span>}
             <input
-              className={classNames({
+              className={this.state.classNamesGen({
                 'search-box': true,
                 [`${searchClass}-box`]: searchClass,
               })}
@@ -783,7 +789,7 @@ class PhoneInput extends React.Component {
         {countryDropdownList.length > 0
           ? countryDropdownList
           : (
-            <li className='no-entries-message'>
+            <li className={this.state.classNamesGen(['no-entries-message'])}>
               <span>No entries to show.</span>
             </li>
           )}
