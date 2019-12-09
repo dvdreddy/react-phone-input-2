@@ -147,7 +147,6 @@ class PhoneInput extends React.Component {
       props.prefix,
     );
 
-    const classNamesGen = props.classNamesGen || classNames;
     const inputNumber = props.value.replace(/[^0-9\.]+/g, '') || '';
 
     let countryGuess;
@@ -176,6 +175,7 @@ class PhoneInput extends React.Component {
     );
 
     const highlightCountryIndex = onlyCountries.findIndex(o => o == countryGuess);
+    const classNamesGen = props.classNamesGen || classNames;
 
     this.state = {
       formattedNumber,
@@ -189,6 +189,7 @@ class PhoneInput extends React.Component {
       freezeSelection: false,
       debouncedQueryStingSearcher: debounce(this.searchCountry, 250),
       searchValue: '',
+      classNamesGen,
     };
   }
 
@@ -701,14 +702,14 @@ class PhoneInput extends React.Component {
     const searchedCountries = this.getSearchFilteredCountries()
 
     let countryDropdownList = searchedCountries.map((country, index) => {
-      const itemClasses = classNamesGen({
+      const itemClasses = this.state.classNamesGen({
         country: true,
         preferred: country.iso2 === 'us' || country.iso2 === 'gb',
         active: country.iso2 === 'us',
         highlight: highlightCountryIndex === index
       });
 
-      const inputFlagClasses = classNamesGen(["flag", country.iso2]);
+      const inputFlagClasses = this.state.classNamesGen(["flag", country.iso2]);
 
       return (
         <li
@@ -733,7 +734,7 @@ class PhoneInput extends React.Component {
     (preferredCountries.length > 0) && (!enableSearch || enableSearch && !searchValue.trim()) &&
     countryDropdownList.splice(preferredCountries.length, 0, dashedLi);
 
-    const dropDownClasses = classNamesGen({
+    const dropDownClasses = this.state.classNamesGen({
       [this.props.dropdownClass]: true,
       'country-list': true,
       'hide': !showDropdown
@@ -794,32 +795,32 @@ class PhoneInput extends React.Component {
     const { onlyCountries, selectedCountry, showDropdown, formattedNumber } = this.state;
     const { disableDropdown, renderStringAsFlag } = this.props;
 
-    const arrowClasses = classNamesGen({'arrow': true, 'up': showDropdown});
-    const inputClasses = classNamesGen({
+    const arrowClasses = this.state.classNamesGen({'arrow': true, 'up': showDropdown});
+    const inputClasses = this.state.classNamesGen({
       [this.props.inputClass]: true,
       'form-control': true,
       'invalid-number': !this.props.isValid(formattedNumber.replace(/\D/g, ''), onlyCountries),
       'open': showDropdown,
     });
-    const selectedFlagClasses = classNamesGen({
+    const selectedFlagClasses = this.state.classNamesGen({
       'selected-flag': true,
       'open': showDropdown,
     });
-    const flagViewClasses = classNamesGen({
+    const flagViewClasses = this.state.classNamesGen({
       [this.props.buttonClass]: true,
       'flag-dropdown': true,
       'open': showDropdown,
     });
     const inputFlagClasses =
-          classNamesGen(["flag",
-                         selectedCountry ? selectedCountry.iso2 : ""]);
+          this.state.classNamesGen(["flag",
+                                    selectedCountry ? selectedCountry.iso2 : ""]);
 
 
     return (
       <div
-        className={this.props.containerClass}
-        style={this.props.style || this.props.containerStyle}
-        onKeyDown={this.handleKeydown}>
+      className={this.state.classNamesGen({[this.props.containerClass]: true})}
+      style={this.props.style || this.props.containerStyle}
+      onKeyDown={this.handleKeydown}>
         <input
           className={inputClasses}
           id='phone-form-control'
