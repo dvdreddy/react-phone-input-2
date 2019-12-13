@@ -214,6 +214,15 @@ class PhoneInput extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.country && nextProps.country !== this.state.country) {
+      this.updateCountry(nextProps.country);
+    }
+    else if (nextProps.value !== this.state.formattedNumber) {
+      this.updateFormattedNumber(nextProps.value);
+    }
+  }
+
   getProbableCandidate = memoize((queryString) => {
     if (!queryString || queryString.length === 0) {
       return null;
